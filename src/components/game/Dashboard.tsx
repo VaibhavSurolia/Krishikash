@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import confetti from 'canvas-confetti';
 import { Wallet, PiggyBank, TrendingUp, Heart, AlertTriangle } from 'lucide-react';
 import { StatsCard } from './StatsCard';
 import { ProgressBar } from './ProgressBar';
@@ -15,6 +17,17 @@ export const Dashboard = ({ gameState, onStartMonth }: DashboardProps) => {
   const farmingExpenses = Math.round(FIXED_EXPENSES.farming * gameState.expenseMultiplier);
   const educationExpenses = Math.round(FIXED_EXPENSES.education * gameState.expenseMultiplier);
   const totalExpenses = householdExpenses + farmingExpenses + educationExpenses;
+
+  useEffect(() => {
+    if (gameState.consecutiveSavingMonths >= 3 && gameState.consecutiveSavingMonths % 3 === 0) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#22c55e', '#eab308', '#ffffff']
+      });
+    }
+  }, [gameState.consecutiveSavingMonths]);
 
   return (
     <div className="space-y-6 animate-slide-up">
@@ -110,7 +123,7 @@ export const Dashboard = ({ gameState, onStartMonth }: DashboardProps) => {
             <div className="flex-1">
               <span className="font-bold text-emerald-700">Savings Streak!</span>
               <p className="text-xs text-emerald-600">
-                {gameState.consecutiveSavingMonths} month{gameState.consecutiveSavingMonths > 1 ? 's' : ''} saved | 
+                {gameState.consecutiveSavingMonths} month{gameState.consecutiveSavingMonths > 1 ? 's' : ''} saved |
                 {formatIndianCurrency(gameState.totalSavedThisStreak)} total
               </p>
               {gameState.consecutiveSavingMonths >= 3 && gameState.totalSavedThisStreak >= 75000 && (

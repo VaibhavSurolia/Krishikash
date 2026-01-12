@@ -6,68 +6,73 @@
 
 @layer base {
   :root {
-    /* Earthy, warm palette for rural finance game */
-    --background: 45 30% 96%;
-    --foreground: 30 20% 15%;
+    /* Vibrant Rural Finance Palette */
+    --background: 45 60% 98%;
+    /* Much warmer, sunnier background */
+    --foreground: 30 40% 10%;
+    /* Richer dark brown */
 
-    --card: 45 40% 98%;
-    --card-foreground: 30 20% 15%;
+    --card: 45 50% 99%;
+    --card-foreground: 30 40% 10%;
 
-    --popover: 45 40% 98%;
-    --popover-foreground: 30 20% 15%;
+    --popover: 45 50% 99%;
+    --popover-foreground: 30 40% 10%;
 
-    /* Primary: Earthy Green (growth, crops) */
-    --primary: 142 45% 38%;
-    --primary-foreground: 45 40% 98%;
+    /* Primary: Vibrant Growth Green */
+    --primary: 142 60% 40%;
+    /* More saturated green */
+    --primary-foreground: 45 60% 98%;
 
-    /* Secondary: Warm Sand/Tan */
-    --secondary: 35 35% 85%;
-    --secondary-foreground: 30 20% 20%;
+    /* Secondary: Warm Golden Tan */
+    --secondary: 40 60% 90%;
+    --secondary-foreground: 30 40% 15%;
 
-    /* Muted: Soft earth tones */
-    --muted: 35 20% 90%;
-    --muted-foreground: 30 15% 45%;
+    /* Muted: Soft Earth */
+    --muted: 35 30% 92%;
+    --muted-foreground: 30 20% 40%;
 
-    /* Accent: Golden Amber (money, success) */
-    --accent: 38 92% 50%;
-    --accent-foreground: 30 20% 15%;
+    /* Accent: Glowing Gold */
+    --accent: 38 100% 50%;
+    --accent-foreground: 30 40% 10%;
 
-    /* Success: Bright Green */
-    --success: 142 70% 45%;
-    --success-foreground: 45 40% 98%;
+    /* Success: Bright Emerald */
+    --success: 150 80% 40%;
+    --success-foreground: 45 60% 98%;
 
-    /* Warning: Warm Orange */
-    --warning: 25 95% 53%;
-    --warning-foreground: 30 20% 15%;
+    /* Warning: Hot Orange */
+    --warning: 25 100% 55%;
+    --warning-foreground: 30 40% 10%;
 
-    /* Destructive: Soft Red */
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 45 40% 98%;
+    /* Destructive: Vibrant Red */
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 45 60% 98%;
 
-    --border: 35 25% 82%;
-    --input: 35 25% 85%;
-    --ring: 142 45% 38%;
+    --border: 35 30% 85%;
+    --input: 35 30% 88%;
+    --ring: 142 60% 40%;
 
-    --radius: 1rem;
+    --radius: 1.25rem;
+    /* Rounder corners */
 
-    /* Game-specific colors */
-    --money: 38 92% 50%;
-    --savings: 142 70% 45%;
-    --debt: 0 72% 51%;
-    --stability: 199 89% 48%;
-    --income: 142 45% 38%;
-    
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(142 45% 38%), hsl(142 55% 45%));
-    --gradient-money: linear-gradient(135deg, hsl(38 92% 50%), hsl(45 100% 60%));
-    --gradient-card: linear-gradient(180deg, hsl(45 40% 98%), hsl(45 30% 94%));
-    --gradient-hero: linear-gradient(180deg, hsl(35 35% 85%), hsl(45 30% 96%));
+    /* Game-specific colors (Vibrant) */
+    --money: 38 100% 50%;
+    --savings: 150 80% 40%;
+    --debt: 0 85% 60%;
+    --stability: 200 90% 50%;
+    --income: 142 60% 40%;
 
-    /* Shadows */
-    --shadow-card: 0 4px 20px -4px hsl(30 20% 15% / 0.08);
-    --shadow-elevated: 0 8px 30px -8px hsl(30 20% 15% / 0.15);
-    --shadow-glow-money: 0 0 20px hsl(38 92% 50% / 0.3);
-    --shadow-glow-success: 0 0 20px hsl(142 70% 45% / 0.3);
+    /* Dynamic Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(142 60% 40%), hsl(142 70% 50%));
+    --gradient-money: linear-gradient(135deg, hsl(38 100% 50%), hsl(45 100% 65%));
+    --gradient-card: linear-gradient(180deg, hsl(45 50% 99%), hsl(45 30% 96%));
+    --gradient-hero: linear-gradient(180deg, hsl(40 60% 90%), hsl(45 60% 98%));
+    --gradient-sky: linear-gradient(180deg, hsl(200 90% 90%), hsl(45 60% 98%));
+
+    /* Enhanced Shadows */
+    --shadow-card: 0 8px 30px -4px hsl(30 40% 15% / 0.1);
+    --shadow-elevated: 0 12px 40px -8px hsl(30 40% 15% / 0.15);
+    --shadow-glow-money: 0 0 30px hsl(38 100% 50% / 0.4);
+    --shadow-glow-success: 0 0 30px hsl(150 80% 40% / 0.4);
   }
 
   .dark {
@@ -117,7 +122,12 @@
     font-family: 'Nunito', system-ui, sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Nunito', system-ui, sans-serif;
     @apply font-bold tracking-tight;
   }
@@ -236,10 +246,13 @@
   }
 
   @keyframes pulse-glow {
-    0%, 100% {
+
+    0%,
+    100% {
       opacity: 1;
       box-shadow: 0 0 20px hsl(38 92% 50% / 0.3);
     }
+
     50% {
       opacity: 0.9;
       box-shadow: 0 0 30px hsl(38 92% 50% / 0.5);
@@ -255,6 +268,7 @@
       opacity: 0;
       transform: translateY(20px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -270,6 +284,7 @@
       opacity: 0;
       transform: scale(0.9);
     }
+
     to {
       opacity: 1;
       transform: scale(1);
