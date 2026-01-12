@@ -1,0 +1,333 @@
+import { useState } from 'react';
+import { PiggyBank, Shield, Banknote, ArrowRight, CreditCard, ShieldOff, ShieldPlus } from 'lucide-react';
+import { cn, formatIndianCurrency } from '@/lib/utils';
+
+interface DecisionPanelProps {
+  balance: number;
+  savings: number;
+  hasInsurance: boolean;
+  insuranceAmount: number;
+  debt: number;
+  loanMonthsRemaining: number;
+  onSave: (amount: number) => void;
+  onBuyInsurance: (amount: number) => void;
+  onUpdateInsurance: (amount: number) => void;
+  onStopInsurance: () => void;
+  onTakeLoan: (amount: number) => void;
+  onRepayLoan: (amount: number) => void;
+  onWithdrawFromSavings: (amount: number) => void;
+  onEndMonth: () => void;
+}
+
+export const DecisionPanel = ({
+  balance,
+  savings,
+  hasInsurance,
+  insuranceAmount,
+  debt,
+  loanMonthsRemaining,
+  onSave,
+  onBuyInsurance,
+  onUpdateInsurance,
+  onStopInsurance,
+  onTakeLoan,
+  onRepayLoan,
+  onWithdrawFromSavings,
+  onEndMonth,
+}: DecisionPanelProps) => {
+  const [saveAmount, setSaveAmount] = useState(25000);
+  const [showLoanConfirm, setShowLoanConfirm] = useState(false);
+  const [repayAmount, setRepayAmount] = useState<number | null>(null);
+  const [selectedInsuranceAmount, setSelectedInsuranceAmount] = useState(5000);
+
+  const totalAvailable = balance + savings;
+  const needsMoreToClearDebt = debt > balance && savings > 0;
+  const shortfall = debt - balance;
+
+  const savingOptions = [10000, 25000, 50000, 75000];
+  const insuranceOptions = [5000, 7500, 10000];
+  const loanAmount = 50000;
+
+  return (
+    <div className="space-y-4 animate-slide-up">
+      {/* Save Money Section */}
+      <div className="game-card">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+            <PiggyBank className="w-5 h-5 text-emerald-600" />
+          </div>
+          <div>
+            <h3 className="font-bold text-foreground">Save Money</h3>
+            <p className="text-xs text-muted-foreground">Build your savings for the future</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-4 gap-2 mb-3">
+          {savingOptions.map((amount) => (
+            <button
+              key={amount}
+              onClick={() => setSaveAmount(amount)}
+              className={cn(
+                'py-2 px-2 rounded-lg text-xs font-semibold transition-all',
+                saveAmount === amount
+                  ? 'bg-emerald-500 text-white'
+                  : 'bg-muted text-muted-foreground hover:bg-emerald-100'
+              )}
+            >
+              {formatIndianCurrency(amount)}
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={() => onSave(saveAmount)}
+          disabled={balance < saveAmount}
+          className={cn(
+            'btn-success w-full',
+            balance < saveAmount && 'opacity-50 cursor-not-allowed'
+          )}
+        >
+          Save {formatIndianCurrency(saveAmount)}
+        </button>
+        
+        {balance < saveAmount && (
+          <p className="text-xs text-red-500 mt-2 text-center">
+            Insufficient balance
+          </p>
+        )}
+      </div>
+
+      {/* Insurance Section */}
+      <div className={cn("game-card", hasInsurance && "border-blue-300 bg-blue-50/50")}>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+            <Shield className="w-5 h-5 text-blue-600" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-bold text-foreground">Crop Insurance</h3>
+            <p className="text-xs text-muted-foreground">
+              {hasInsurance 
+                ? `Auto-deducts ${formatIndianCurrency(insuranceAmount)}/month` 
+                : 'Protect against crop loss'}
+            </p>
+          </div>
+          {hasInsurance && (
+            <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-semibold">
+              {formatIndianCurrency(insuranceAmount)}/mo
+            </span>
+          )}
+        </div>
+
+        {!hasInsurance ? (
+          <>
+            <div className="grid grid-cols-3 gap-2 mb-3">
+              {insuranceOptions.map((amount) => (
+                <button
+                  key={amount}
+                  onClick={() => setSelectedInsuranceAmount(amount)}
+                  className={cn(
+                    'py-2 px-2 rounded-lg text-xs font-semibold transition-all',
+                    selectedInsuranceAmount === amount
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-muted text-muted-foreground hover:bg-blue-100'
+                  )}
+                >
+                  {formatIndianCurrency(amount)}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => onBuyInsurance(selectedInsuranceAmount)}
+              disabled={balance < selectedInsuranceAmount}
+              className={cn(
+                'btn-game w-full bg-blue-500 text-white hover:bg-blue-600',
+                balance < selectedInsuranceAmount && 'opacity-50 cursor-not-allowed'
+              )}
+            >
+              Start Insurance - {formatIndianCurrency(selectedInsuranceAmount)}
+            </button>
+          </>
+        ) : (
+          <div className="space-y-3">
+            <div className="grid grid-cols-3 gap-2">
+              {insuranceOptions.map((amount) => (
+                <button
+                  key={amount}
+                  onClick={() => onUpdateInsurance(amount)}
+                  disabled={amount === insuranceAmount}
+                  className={cn(
+                    'py-2 px-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1',
+                    amount === insuranceAmount
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-muted text-muted-foreground hover:bg-blue-100'
+                  )}
+                >
+                  {amount > insuranceAmount && <ShieldPlus className="w-3 h-3" />}
+                  {formatIndianCurrency(amount)}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={onStopInsurance}
+              className="btn-game w-full bg-red-100 text-red-700 border-2 border-red-300 hover:bg-red-200 flex items-center justify-center gap-2"
+            >
+              <ShieldOff className="w-4 h-4" />
+              Stop Insurance
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Loan Repayment Section - Shows when debt exists */}
+      {debt > 0 && (
+        <div className="game-card border-red-300 bg-red-50/50">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+              <CreditCard className="w-5 h-5 text-red-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-foreground">Repay Loan</h3>
+              <p className="text-xs text-red-600">
+                ⚠️ {loanMonthsRemaining} months left! 5% monthly interest
+              </p>
+            </div>
+            <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-semibold">
+              {formatIndianCurrency(debt)}
+            </span>
+          </div>
+
+          {/* Withdraw from savings hint */}
+          {needsMoreToClearDebt && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3">
+              <p className="text-xs text-amber-700">
+                💡 You have {formatIndianCurrency(savings)} in savings. Withdraw to pay off the full debt!
+              </p>
+              <button
+                onClick={() => onWithdrawFromSavings(Math.min(shortfall, savings))}
+                className="mt-2 w-full py-2 px-3 rounded-lg text-xs font-semibold bg-amber-500 text-white hover:bg-amber-600 transition-all"
+              >
+                Withdraw {formatIndianCurrency(Math.min(shortfall, savings))} from Savings
+              </button>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            <button
+              onClick={() => setRepayAmount(Math.min(10000, debt, balance))}
+              disabled={balance < 10000 || debt < 10000}
+              className={cn(
+                'py-2 px-3 rounded-lg text-sm font-semibold transition-all',
+                repayAmount === Math.min(10000, debt, balance)
+                  ? 'bg-green-500 text-white'
+                  : 'bg-muted text-muted-foreground hover:bg-green-100',
+                (balance < 10000 || debt < 10000) && 'opacity-50 cursor-not-allowed'
+              )}
+            >
+              ₹10,000
+            </button>
+            <button
+              onClick={() => setRepayAmount(Math.min(25000, debt, balance))}
+              disabled={balance < 25000 || debt < 25000}
+              className={cn(
+                'py-2 px-3 rounded-lg text-sm font-semibold transition-all',
+                repayAmount === Math.min(25000, debt, balance)
+                  ? 'bg-green-500 text-white'
+                  : 'bg-muted text-muted-foreground hover:bg-green-100',
+                (balance < 25000 || debt < 25000) && 'opacity-50 cursor-not-allowed'
+              )}
+            >
+              ₹25,000
+            </button>
+            <button
+              onClick={() => setRepayAmount(Math.min(debt, balance))}
+              disabled={balance <= 0}
+              className={cn(
+                'py-2 px-3 rounded-lg text-sm font-semibold transition-all col-span-2',
+                repayAmount === Math.min(debt, balance)
+                  ? 'bg-green-500 text-white'
+                  : 'bg-muted text-muted-foreground hover:bg-green-100',
+                balance <= 0 && 'opacity-50 cursor-not-allowed'
+              )}
+            >
+              {balance >= debt 
+                ? `Clear Full Debt: ${formatIndianCurrency(debt)}` 
+                : `Pay Max: ${formatIndianCurrency(balance)} (need ${formatIndianCurrency(shortfall)} more)`
+              }
+            </button>
+          </div>
+
+          <button
+            onClick={() => {
+              if (repayAmount) {
+                onRepayLoan(repayAmount);
+                setRepayAmount(null);
+              }
+            }}
+            disabled={!repayAmount || balance < repayAmount}
+            className={cn(
+              'btn-game w-full bg-green-500 text-white hover:bg-green-600',
+              (!repayAmount || balance < repayAmount) && 'opacity-50 cursor-not-allowed'
+            )}
+          >
+            {repayAmount ? `Repay ${formatIndianCurrency(repayAmount)}` : 'Select amount to repay'}
+          </button>
+        </div>
+      )}
+
+      {/* Loan Section - Only shows when no debt */}
+      {debt === 0 && (
+        <div className="game-card border-red-200">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+              <Banknote className="w-5 h-5 text-red-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-foreground">Quick Loan</h3>
+              <p className="text-xs text-red-500">⚠️ 5% monthly interest - Use with caution!</p>
+            </div>
+          </div>
+
+          {!showLoanConfirm ? (
+            <button
+              onClick={() => setShowLoanConfirm(true)}
+              className="btn-game w-full bg-red-100 text-red-700 border-2 border-red-300 hover:bg-red-200"
+            >
+              Take Loan - {formatIndianCurrency(loanAmount)}
+            </button>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-sm text-red-600 text-center font-medium">
+                5% interest added monthly. Repay within 6 months or lose property!
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowLoanConfirm(false)}
+                  className="btn-game flex-1 bg-muted text-muted-foreground"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    onTakeLoan(loanAmount);
+                    setShowLoanConfirm(false);
+                  }}
+                  className="btn-game flex-1 bg-red-500 text-white"
+                >
+                  Confirm Loan
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* End Month Button */}
+      <button
+        onClick={onEndMonth}
+        className="btn-primary-game w-full flex items-center justify-center gap-2"
+      >
+        End Month <ArrowRight className="w-5 h-5" />
+      </button>
+    </div>
+  );
+};
